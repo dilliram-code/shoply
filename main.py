@@ -45,8 +45,13 @@ def split_into_token_chunks(text: str, chunk_size: int = CHUNK_SIZE) -> list[str
   
   # convert text to token ids
   tokens = tokenizer.encode(text)
-  
   for start in range(0, len(tokens), chunk_size):
     
     # convert tokens back into readable text 
     chunk = tokenizer.decode(tokens[start: start + chunk_size]).strip()
+
+# read the pdfs
+def read_knowledge_base() -> list[dict]:
+  for pdf_path in sorted(PDF_DIR.glob("*.pdf")):
+    reader = PdfReader(pdf_path)
+    text = "\n".join(page.extract_text() or "" for page in reader.pages)
