@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 # >>> Change "rag" to the filename of your backend script (without .py) <<<
-from rag import answer_user_query, load_knowledge_base
+from main import answer_user_query, load_knowledge_base
 
 STATIC_DIR = Path(__file__).parent / "static"
 
