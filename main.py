@@ -6,6 +6,9 @@ import tiktoken
 from openai import OpenAI 
 from pinecone import Pinecone
 from pypdf import PdfReader
+from dotenv import load_dotenv
+
+load_dotenv()
 
 PDF_DIR = Path("knowledge")
 
@@ -151,3 +154,16 @@ def answer_user_query(question: str) -> str:
         input=question,
     )
     return response.output_text
+
+def main() -> None:
+    question = " ".join(sys.argv[1:]) or "What is the return policy?"
+    chunk_count = load_knowledge_base()
+    print(f"Loaded {chunk_count} knowledge chunks.")
+
+    # Simple function call; no REST API or web framework is used.
+    answer = answer_user_query(question)
+    print(answer)
+
+
+if __name__ == "__main__":
+    main()
