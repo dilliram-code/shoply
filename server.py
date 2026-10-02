@@ -1,7 +1,3 @@
-"""
-Setup:
-    python -m uvicorn server:app --reload
-"""
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -9,7 +5,6 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-# >>> Change "rag" to the filename of your backend script (without .py) <<<
 from main import answer_user_query, load_knowledge_base
 
 STATIC_DIR = Path(__file__).parent / "static"
