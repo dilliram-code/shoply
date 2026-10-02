@@ -72,3 +72,10 @@ def read_knowledge_base() -> list[dict]:
             )
 
     return chunks
+  
+# create unique ids
+def stable_id(chunk: dict) -> str:
+    raw_id = (
+        f"{chunk['metadata']['source']}:{chunk['metadata']['chunk']}:{chunk['text']}"
+    )
+    return hashlib.sha256(raw_id.encode("utf-8")).hexdigest()
