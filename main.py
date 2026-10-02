@@ -54,7 +54,21 @@ def split_into_token_chunks(text: str, chunk_size: int = CHUNK_SIZE) -> list[str
 
 # read the pdfs
 def read_knowledge_base() -> list[dict]:
-  for pdf_path in sorted(PDF_DIR.glob("*.pdf")):
-    reader = PdfReader(pdf_path)
-    text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    chunks = []
 
+    for pdf_path in sorted(PDF_DIR.glob("*.pdf")):
+        reader = PdfReader(pdf_path)
+        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+
+        for chunk_number, chunk_text in enumerate(split_into_token_chunks(text)):
+            chunks.append(
+                {
+                    "text": chunk_text,
+                    "metadata": {
+                        "source": pdf_path.name,
+                        "chunk": chunk_number,
+                    },
+                }
+            )
+
+    return chunks
