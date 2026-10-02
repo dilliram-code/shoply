@@ -26,6 +26,7 @@ CHAT_MODEL = "gpt-5-mini"
 CHUNK_SIZE = 300
 TOP_K = 4
 
+# get the api keys
 def require_key(name: str) -> str:
   value = os.getenv(name)
   
@@ -34,10 +35,18 @@ def require_key(name: str) -> str:
   
   return value
 
-openai_client = OpenAI(
-  api_key=require_key("OPENAI_API_KEY")
-)
+openai_client = OpenAI(api_key=require_key("OPENAI_API_KEY"))
+pinecone_client = Pinecone(api_key=require_key("PINECONE_API_KEY"))
+pinecone_index = pinecone_client.Index(INDEX_NAME)
+tokenizer = tiktoken.get_encoding("cl100k_base")
 
-pinecone_client = Pinecone(
-  api_key=require_key("PINECONE_API_KEY")
-)
+# split into token chunks
+def split_into_token_chunks(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
+  
+  # convert text to token ids
+  tokens = tokenizer.encode(text)
+  
+  for start in range(0, len(tokens), chunk_size):
+    
+    # convert tokens back into readable text 
+    chunk = tokenizer.decode(tokens[start: start + chunk_size]).strip()
