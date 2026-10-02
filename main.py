@@ -15,3 +15,13 @@ INDEX_NAME = os.getenv(
   "shop-support"
   )
 
+NAMESPACE = os.getenv(
+  "PINECONE_NAMESPACE",
+  "policies"
+)
+
+EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_DIMENSIONS = 1024
+CHAT_MODEL = "gpt-5-mini"
+CHUNK_SIZE = 300
+TOP_K = 4
