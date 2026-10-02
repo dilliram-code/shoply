@@ -10,8 +10,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-api_key =os.getenv("OPENAI_API_KEY")
-
 PDF_DIR = Path("knowledge")
 
 # pinecone index
@@ -40,7 +38,7 @@ def require_key(name: str) -> str:
   
   return value
 
-openai_client = OpenAI(api_key=require_key(api_key))
+openai_client = OpenAI(api_key=require_key("OPENAI_API_KEY"))
 pinecone_client = Pinecone(api_key=require_key("PINECONE_API_KEY"))
 pinecone_index = pinecone_client.Index(INDEX_NAME)
 tokenizer = tiktoken.get_encoding("cl100k_base")
