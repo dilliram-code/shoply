@@ -79,3 +79,30 @@ def stable_id(chunk: dict) -> str:
         f"{chunk['metadata']['source']}:{chunk['metadata']['chunk']}:{chunk['text']}"
     )
     return hashlib.sha256(raw_id.encode("utf-8")).hexdigest()
+
+# rag ingestion
+def load_knowledge_base() -> int:
+    chunks = read_knowledge_base()
+    batch_size = 100
+
+    for start in range(0, len(chunks), batch_size):
+        batch = chunks[start : start + batch_size]
+        embedding_response = openai_client.embeddings.create(
+            model=EMBEDDING_MODEL,
+            input=[chunk["text"] for chunk in batch],
+            dimensions=EMBEDDING_DIMENSIONS,
+        )
+
+        records = []
+        for chunk, embedding in zip(batch, embedding_response.data):
+            records.append(
+                {
+                    "id": stable_id(chunk),
+                    "values": embedding.embedding,
+                    "metadata": {**chunk["metadata"], "text": chunk["text"]},
+                }
+            )
+
+        pinecone_index.upsert(vectors=records, namespace=NAMESPACE)
+
+    return len(chunks)
