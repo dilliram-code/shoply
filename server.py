@@ -1,13 +1,6 @@
 """
-ShopEase web server.
-
-Wraps your existing RAG code (rag.py) in a small FastAPI app and serves the
-chat UI from ./static. No change to your RAG code is required.
-
 Setup:
-    pip install fastapi "uvicorn[standard]"
     python -m uvicorn server:app --reload
-Then open http://127.0.0.1:8000
 """
 from pathlib import Path
 
