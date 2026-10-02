@@ -93,6 +93,7 @@ def load_knowledge_base() -> int:
             dimensions=EMBEDDING_DIMENSIONS,
         )
 
+        # create pinecone records
         records = []
         for chunk, embedding in zip(batch, embedding_response.data):
             records.append(
@@ -103,6 +104,50 @@ def load_knowledge_base() -> int:
                 }
             )
 
+        # insert if new or upload if already exists
         pinecone_index.upsert(vectors=records, namespace=NAMESPACE)
 
     return len(chunks)
+
+# embed the user question into vector embedding
+def answer_user_query(question: str) -> str:
+
+    # embed the question
+    query_embedding = openai_client.embeddings.create(
+        model=EMBEDDING_MODEL,
+        input=question,
+        dimensions=EMBEDDING_DIMENSIONS,
+    )
+
+    # search the most relevant 4 vectors in vector database
+    search_result = pinecone_index.query(
+        vector=query_embedding.data[0].embedding,
+        top_k=TOP_K,
+        include_metadata=True,
+        namespace=NAMESPACE,
+    )
+
+    # extract the retrieved text
+    context = "\n\n".join(
+        match.metadata.get("text", "")
+        for match in search_result.matches
+        if match.metadata and match.metadata.get("text")
+    )
+
+    instructions = f'''You are an AI customer support assistant for our e-commerce company.
+
+    Answer the customer using ONLY the company information provided below.
+
+    If the answer is not available in the provided information, say:
+    "I don't have that information in the company documents."
+
+    COMPANY INFORMATION
+    {context}'''
+
+    # gpt generates the actual answer
+    response = openai_client.responses.create(
+        model=CHAT_MODEL,
+        instructions=instructions,
+        input=question,
+    )
+    return response.output_text
