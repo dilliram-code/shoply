@@ -23,6 +23,7 @@ NAMESPACE = os.getenv(
   "policies"
 )
 
+# presets (could be changed depending on the problems)
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_DIMENSIONS = 1024
 CHAT_MODEL = "gpt-5-mini"
@@ -31,13 +32,12 @@ TOP_K = 4
 
 # get the api keys
 def require_key(name: str) -> str:
-  value = os.getenv(name)
-  
-  if not value: 
-    raise RuntimeError(f"Set {name} before running the program.")
-  
-  return value
+    value = os.getenv(name)
+    if not value: 
+        raise RuntimeError(f"Set {name} before running the program.")
+    return value
 
+# fix the api keys and indexes needed
 openai_client = OpenAI(api_key=require_key("OPENAI_API_KEY"))
 pinecone_client = Pinecone(api_key=require_key("PINECONE_API_KEY"))
 pinecone_index = pinecone_client.Index(INDEX_NAME)
@@ -62,7 +62,13 @@ def read_knowledge_base() -> list[dict]:
 
     for pdf_path in sorted(PDF_DIR.glob("*.pdf")):
         reader = PdfReader(pdf_path)
-        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        page_texts = []
+
+        for page in reader.pages:
+            extracted_text = page.extract_text() or ""
+            page_texts.append(extracted_text)
+
+        text = "\n".join(page_texts)
 
         for chunk_number, chunk_text in enumerate(split_into_token_chunks(text)):
             chunks.append(
@@ -76,7 +82,7 @@ def read_knowledge_base() -> list[dict]:
             )
 
     return chunks
-  
+
 # create unique ids
 def stable_id(chunk: dict) -> str:
     raw_id = (
