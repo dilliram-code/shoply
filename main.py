@@ -49,7 +49,8 @@ def split_into_token_chunks(text: str, chunk_size: int = CHUNK_SIZE) -> list[str
     chunks = []
 
     for start in range(0, len(tokens), chunk_size):
-        chunk = tokenizer.decode(tokens[start : start + chunk_size]).strip()
+        end = start + chunk_size
+        chunk = tokenizer.decode(tokens[start : end]).strip()
         if chunk:
             chunks.append(chunk)
 
