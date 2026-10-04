@@ -53,7 +53,6 @@ def split_into_token_chunks(text: str, chunk_size: int = CHUNK_SIZE) -> list[str
         chunk = tokenizer.decode(tokens[start : end]).strip()
         if chunk:
             chunks.append(chunk)
-
     return chunks
 
 # read the pdfs
@@ -89,10 +88,7 @@ def read_knowledge_base() -> list[dict]:
         document_chunks = split_into_token_chunks(text)
 
         # Process each chunk
-        for chunk_number, chunk_text in enumerate(
-            document_chunks
-        ):
-
+        for chunk_number, chunk_text in enumerate(document_chunks):
             chunk = {
                 "text": chunk_text,
                 "metadata": {
@@ -102,7 +98,6 @@ def read_knowledge_base() -> list[dict]:
             }
 
             chunks.append(chunk)
-
     return chunks
 
 # create unique ids
